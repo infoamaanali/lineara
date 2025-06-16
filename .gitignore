@@ -38,8 +38,4 @@ yarn-error.log*
 
 # typescript
 *.tsbuildinfo
-<<<<<<< HEAD
 next-env.d.ts
-=======
-next-env.d.ts
->>>>>>> f0b15a33615f414c81c90dda6d438d0cd457b5a5
