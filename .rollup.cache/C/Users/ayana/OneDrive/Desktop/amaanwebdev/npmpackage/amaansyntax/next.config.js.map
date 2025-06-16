@@ -1,0 +1,1 @@
+{"version":3,"file":"next.config.js","sourceRoot":"","sources":["next.config.ts"],"names":[],"mappings":"AACA,MAAM,UAAU,GAAe;IAC7B,eAAe,EAAE,IAAI;IACrB,SAAS,EAAE,IAAI;CAChB,CAAC;AACF,eAAe,UAAU,CAAC","sourcesContent":["import type { NextConfig } from \"next\";\nconst nextConfig: NextConfig = {\n  reactStrictMode: true,\n  swcMinify: true,\n};\nexport default nextConfig;\n"]}
