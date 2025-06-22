@@ -1,21 +1,153 @@
-// src/components/Button/Button.tsx
-import React from "react";
-import clsx from "clsx";
-import { buttonVariants } from "./Button.variants";
-import type { ButtonProps } from "./Button.types";
+import React, { forwardRef } from "react";
+import { Loader2 } from "lucide-react";
+import type { ButtonProps } from "./types";
+import { getBaseStyles, getVariantStyles } from "./styles";
+import { getSizeStyles, getRadiusStyles, getWidthStyles } from "./utils";
 
-export const Button = ({
-  variant,
-  styleType, // <-- add this
-  className,
-  children,
-  ...props
-}: ButtonProps) => {
-  return (
-    <button
-      className={clsx(buttonVariants({ variant, styleType }), className)}
-      {...props}>
-      {children}
-    </button>
-  );
-};
+/**
+ * A reusable and customizable Button component with built-in support for:
+ * - variants (solid, outline, ghost, etc.)
+ * - color themes (primary, success, danger, etc.)
+ * - sizes (xs, sm, md, lg, xl)
+ * - icons (left and right)
+ * - loading and disabled states
+ * - pill and block display styles
+ */
+const Button = forwardRef(
+  (
+    {
+      /**
+       * Content rendered inside the button (usually text or an element).
+       */
+      children = "Lineara's Button",
+
+      /**
+       * Visual style of the button (e.g., solid, outline, ghost).
+       * @default "solid"
+       */
+      variant = "solid",
+
+      /**
+       * Color theme for the button. Only predefined color values are allowed.
+       * @default "primary"
+       */
+      color = "primary",
+
+      /**
+       * Size of the button (xs, sm, md, lg, xl).
+       * @default "md"
+       */
+      size = "md",
+
+      /**
+       * If true, renders the button with fully rounded edges.
+       * @default false
+       */
+      pill = false,
+
+      /**
+       * If true, the button expands to the full width of its container.
+       * @default false
+       */
+      block = false,
+
+      /**
+       * If true, the button will be disabled and non-interactive.
+       * @default false
+       */
+      disabled = false,
+
+      /**
+       * If true, shows a loading spinner and disables interaction.
+       * @default false
+       */
+      loading = false,
+
+      /**
+       * If true, applies "active" styling to the button.
+       * @default false
+       */
+      active = false,
+
+      /**
+       * Optional icon or element shown before the button content.
+       */
+      leftIcon,
+
+      /**
+       * Optional icon or element shown after the button content.
+       */
+      rightIcon,
+
+      /**
+       * Callback triggered when the button is clicked.
+       */
+      onClick,
+
+      /**
+       * Native button type — useful in form contexts.
+       * @default "button"
+       */
+      type = "button",
+
+      /**
+       * Additional custom Tailwind utility classes.
+       */
+      className = "",
+
+      /**
+       * Additional HTML button attributes.
+       */
+      ...props
+    }: ButtonProps,
+    ref: React.Ref<HTMLButtonElement>
+  ) => {
+    // Compose all utility classes into a single class string
+    const allStyles = [
+      ...getBaseStyles(),
+      ...getSizeStyles(size),
+      ...getRadiusStyles(size, pill),
+      ...getWidthStyles(block),
+      ...getVariantStyles(variant, color, active),
+      ...(disabled
+        ? ["opacity-50", "cursor-not-allowed", "pointer-events-none"]
+        : []),
+      ...(loading ? ["cursor-wait"] : []),
+      className,
+    ]
+      .filter(Boolean)
+      .join(" ");
+
+    return (
+      <button
+        ref={ref}
+        type={type}
+        className={allStyles}
+        onClick={onClick}
+        disabled={disabled || loading}
+        {...props}
+      >
+        {loading ? (
+          // Render spinner when loading
+          <Loader2
+            className="animate-spin"
+            size={size === "xs" ? 14 : size === "sm" ? 16 : 18}
+          />
+        ) : (
+          // Render left icon (if provided)
+          leftIcon && <span className="mr-1">{leftIcon}</span>
+        )}
+
+        {/* Render button content (children) */}
+        {children && <span>{children}</span>}
+
+        {/* Render right icon (if provided and not loading) */}
+        {!loading && rightIcon && <span className="ml-1">{rightIcon}</span>}
+      </button>
+    );
+  }
+);
+
+Button.displayName = "Button";
+
+export default Button;

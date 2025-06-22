@@ -9,7 +9,6 @@ import pkg from "./package.json" assert { type: "json" };
 import cssnano from "cssnano";
 
 export default [
-  // 1. JavaScript + CSS
   {
     input: "src/index.ts",
     output: [
@@ -36,7 +35,6 @@ export default [
         sourceMap: true,
         plugins: [
           tailwindcss(),
-          // autoprefixer(),
           cssnano({
             preset: ["default", { calc: false }],
           }),
@@ -44,12 +42,14 @@ export default [
       }),
     ],
   },
-
-  // 2. Types (skip CSS)
   {
     input: "src/index.ts",
     output: [{ file: "dist/index.d.ts", format: "esm" }],
-    plugins: [dts()],
-    external: [/\.css$/], // <-- tell Rollup to ignore .css files
+    plugins: [dts(
+      {
+        tsconfig: "./tsconfig.build.json",
+      }
+    )],
+    external: [/\.css$/],
   },
 ];

@@ -1,171 +1,193 @@
-import * as react_jsx_runtime from 'react/jsx-runtime';
-import * as tailwind_variants from 'tailwind-variants';
-import { VariantProps } from 'tailwind-variants';
-import React from 'react';
+import React, { ReactNode } from 'react';
 
-declare const buttonVariants: tailwind_variants.TVReturnType<{
-    variant: {
-        primary: null;
-        secondary: null;
-        success: null;
-        danger: null;
-        warning: null;
-        info: null;
-        light: null;
-        dark: null;
-        String: StringConstructor;
-    };
-    styleType: {
-        solid: null;
-        outline: null;
-        dashed: null;
-        dotted: null;
-        double: null;
-    };
-    shadow: {
-        none: string;
-        "2xs": string;
-        xs: string;
-        sm: string;
-        md: string;
-        lg: string;
-        xl: string;
-        "2xl": string;
-    };
-    border: {
-        none: string;
-        "2xs": string;
-        xs: string;
-        sm: string;
-        md: string;
-        lg: string;
-        xl: string;
-        "2xl": string;
-    };
-    roundness: {
-        none: string;
-        normal: string;
-        full: string;
-        xs: string;
-        sm: string;
-        md: string;
-        lg: string;
-        xl: string;
-        "2xl": string;
-        "3xl": string;
-        "4xl": string;
-    };
-}, undefined, "inline-flex items-center justify-center font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none", {
-    variant: {
-        primary: null;
-        secondary: null;
-        success: null;
-        danger: null;
-        warning: null;
-        info: null;
-        light: null;
-        dark: null;
-        String: StringConstructor;
-    };
-    styleType: {
-        solid: null;
-        outline: null;
-        dashed: null;
-        dotted: null;
-        double: null;
-    };
-    shadow: {
-        none: string;
-        "2xs": string;
-        xs: string;
-        sm: string;
-        md: string;
-        lg: string;
-        xl: string;
-        "2xl": string;
-    };
-    border: {
-        none: string;
-        "2xs": string;
-        xs: string;
-        sm: string;
-        md: string;
-        lg: string;
-        xl: string;
-        "2xl": string;
-    };
-    roundness: {
-        none: string;
-        normal: string;
-        full: string;
-        xs: string;
-        sm: string;
-        md: string;
-        lg: string;
-        xl: string;
-        "2xl": string;
-        "3xl": string;
-        "4xl": string;
-    };
-}, undefined, tailwind_variants.TVReturnType<{
-    variant: {
-        primary: null;
-        secondary: null;
-        success: null;
-        danger: null;
-        warning: null;
-        info: null;
-        light: null;
-        dark: null;
-        String: StringConstructor;
-    };
-    styleType: {
-        solid: null;
-        outline: null;
-        dashed: null;
-        dotted: null;
-        double: null;
-    };
-    shadow: {
-        none: string;
-        "2xs": string;
-        xs: string;
-        sm: string;
-        md: string;
-        lg: string;
-        xl: string;
-        "2xl": string;
-    };
-    border: {
-        none: string;
-        "2xs": string;
-        xs: string;
-        sm: string;
-        md: string;
-        lg: string;
-        xl: string;
-        "2xl": string;
-    };
-    roundness: {
-        none: string;
-        normal: string;
-        full: string;
-        xs: string;
-        sm: string;
-        md: string;
-        lg: string;
-        xl: string;
-        "2xl": string;
-        "3xl": string;
-        "4xl": string;
-    };
-}, undefined, "inline-flex items-center justify-center font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none", unknown, unknown, undefined>>;
-
-type ButtonProps = VariantProps<typeof buttonVariants> & {
-    children: React.ReactNode;
+/**
+ * Predefined preset options that apply a fixed configuration to the button.
+ */
+type Preset = "Logout" | "Submit";
+/**
+ * Allowed visual styles for the button.
+ * - `solid`: Filled background.
+ * - `outline`: Border with transparent background.
+ * - `ghost`: Transparent button with hover effect.
+ * - `soft`: Subtle background and text.
+ * - `white`: White background, often for light themes.
+ * - `link`: Styled like a hyperlink.
+ */
+type KnownButtonVariants = "solid" | "outline" | "ghost" | "soft" | "white" | "link";
+/**
+ * Allowed color schemes for the button.
+ * These usually map to Tailwind colors or design tokens.
+ */
+type KnownButtonColor = "primary" | "secondary" | "success" | "danger" | "warning" | "info" | "gray";
+/**
+ * Size variants for the button.
+ * - `xs`, `sm`, `md`, `lg`, `xl`
+ */
+type ButtonSize = "xs" | "sm" | "md" | "lg" | "xl";
+/**
+ * Utility type to disallow using hex-like strings such as "#123abc"
+ * in props like `variant` or `color`. If such a value is passed,
+ * the TypeScript compiler will display a helpful error object.
+ */
+type InvalidHex<T> = T extends `#${string}` ? {
+    /** Error message shown in IntelliSense */
+    ERROR: "❌ Hex-like string values (e.g., #123abc) are not allowed.";
+    /** Fix suggestion shown in IntelliSense */
+    FIX: "Use a known name like 'primary', 'solid', or a numeric value.";
+    /** Shows the incorrect value that was passed */
+    RECEIVED: T;
+} : T;
+/**
+ * Ensures that only valid button variants are allowed at compile time.
+ * If an invalid value like a hex string is passed, it returns a helpful error.
+ */
+type ButtonVariant<T = unknown> = T extends KnownButtonVariants ? T : T extends number ? T : InvalidHex<T>;
+/**
+ * Ensures that only valid button colors are allowed at compile time.
+ * If an invalid value like a hex string is passed, it returns a helpful error.
+ */
+type ButtonColor<T = unknown> = T extends KnownButtonColor ? T : T extends number ? T : InvalidHex<T>;
+/**
+ * Button props when using a predefined `preset`.
+ * All other customization options are forbidden to avoid conflicts.
+ */
+interface PresetButtonProps {
+    /**
+     * One of the supported presets, such as "Logout" or "Submit".
+     * When set, the button will use a predefined style and behavior.
+     */
+    preset: Preset;
+    /**
+     * Children (content) inside the button.
+     */
+    children: ReactNode;
+    /**
+     * Optional callback fired when the button is clicked.
+     */
+    onClick?: () => void;
+    /**
+     * Defines the type of button when used in a form.
+     * - `"button"` (default): Basic button behavior.
+     * - `"submit"`: Submits a form.
+     * - `"reset"`: Resets form fields.
+     */
+    type?: "button" | "submit" | "reset";
+    /**
+     * Additional Tailwind utility classes for styling.
+     */
     className?: string;
-};
+    /** ❌ Disallowed when using a preset — avoided for consistency. */
+    variant?: never;
+    /** ❌ Disallowed when using a preset — avoided for consistency. */
+    color?: never;
+    /** ❌ Disallowed when using a preset — avoided for consistency. */
+    size?: never;
+    /** ❌ Disallowed when using a preset — avoided for consistency. */
+    pill?: never;
+    /** ❌ Disallowed when using a preset — avoided for consistency. */
+    block?: never;
+    /** ❌ Disallowed when using a preset — avoided for consistency. */
+    disabled?: never;
+    /** ❌ Disallowed when using a preset — avoided for consistency. */
+    loading?: never;
+    /** ❌ Disallowed when using a preset — avoided for consistency. */
+    active?: never;
+    /** ❌ Disallowed when using a preset — avoided for consistency. */
+    leftIcon?: never;
+    /** ❌ Disallowed when using a preset — avoided for consistency. */
+    rightIcon?: never;
+}
+/**
+ * Props for a fully customizable button.
+ * All design tokens and variants are available here.
+ */
+interface CustomButtonProps<TVariant = KnownButtonVariants, TColor = KnownButtonColor> {
+    /**
+     * Content to be rendered inside the button.
+     */
+    children: ReactNode;
+    /**
+     * Button style variant (e.g., `solid`, `outline`, `link`).
+     * @default "solid"
+     */
+    variant?: ButtonVariant<TVariant>;
+    /**
+     * Thematic color for the button (e.g., `primary`, `danger`, `gray`).
+     * @default "primary"
+     */
+    color?: ButtonColor<TColor>;
+    /**
+     * Controls the overall size of the button.
+     * @default "md"
+     */
+    size?: ButtonSize;
+    /**
+     * If true, renders the button with fully rounded edges (pill style).
+     * @default false
+     */
+    pill?: boolean;
+    /**
+     * If true, the button stretches to fill the width of its parent.
+     * @default false
+     */
+    block?: boolean;
+    /**
+     * Disables the button and removes interactivity.
+     * @default false
+     */
+    disabled?: boolean;
+    /**
+     * Displays a loading spinner and disables interaction.
+     * @default false
+     */
+    loading?: boolean;
+    /**
+     * Applies "active" styles to the button.
+     * @default false
+     */
+    active?: boolean;
+    /**
+     * Icon or element to render on the left side of the button content.
+     */
+    leftIcon?: ReactNode;
+    /**
+     * Icon or element to render on the right side of the button content.
+     */
+    rightIcon?: ReactNode;
+    /**
+     * Event handler triggered on click.
+     */
+    onClick?: () => void;
+    /**
+     * Specifies the native HTML button type.
+     * @default "button"
+     */
+    type?: "button" | "submit" | "reset";
+    /**
+     * Additional Tailwind utility classes for custom styling.
+     */
+    className?: string;
+    /** ❌ `preset` should not be used with fully custom buttons. */
+    preset?: never;
+}
+/**
+ * Union of props:
+ * - Use `preset` mode for opinionated button styles.
+ * - Use `custom` mode for full flexibility.
+ *
+ * Only one mode is allowed per usage.
+ */
+type ButtonProps = PresetButtonProps | CustomButtonProps;
 
-declare const Button: ({ variant, styleType, className, children, ...props }: ButtonProps) => react_jsx_runtime.JSX.Element;
+/**
+ * A reusable and customizable Button component with built-in support for:
+ * - variants (solid, outline, ghost, etc.)
+ * - color themes (primary, success, danger, etc.)
+ * - sizes (xs, sm, md, lg, xl)
+ * - icons (left and right)
+ * - loading and disabled states
+ * - pill and block display styles
+ */
+declare const Button: React.ForwardRefExoticComponent<ButtonProps & React.RefAttributes<HTMLButtonElement>>;
 
-export { Button, Button as default };
+export { Button, ButtonProps, Button as default };
