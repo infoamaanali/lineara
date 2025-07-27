@@ -57,7 +57,7 @@ export default function Navbar() {
                 Lineara
               </span>
               <span className="bg-neutral-800/80 backdrop-blur-sm rounded-full border border-white/20 px-2 py-1 text-xs text-zinc-300 hover:border-white/40 hover:bg-neutral-700/80 transition-all duration-300 hover:scale-105 cursor-pointer">
-                v0.0.1
+                v0.0.7
               </span>
             </div>
 
